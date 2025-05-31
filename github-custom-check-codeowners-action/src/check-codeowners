@@ -34,7 +34,7 @@ def main():
         print("Missing SLACK_WEBHOOK_URL", file=sys.stderr)
         sys.exit(1)
 
-    codeowners_path = '.github/CODEOWNERS'
+    codeowners_path = 'CODEOWNERS'
     if not file_exists_in_branch(codeowners_path):
         msg = ":warning: *CODEOWNERS file is missing in the HEAD branch!* Please add it to enforce code review policies."
         send_slack_message(slack_url, msg)
