@@ -1,0 +1,19 @@
+name: Check CODEOWNERS
+
+description: >
+  Checks if CODEOWNERS file is present in the HEAD branch.
+  Sends a Slack message if it's missing.
+
+inputs:
+  slack_webhook_url:
+    required: true
+    description: Slack webhook URL
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check for CODEOWNERS
+      shell: bash
+      run: python ${{ github.action_path }}/check_codeowners.py
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook_url }}

@@ -1,0 +1,46 @@
+import os
+import sys
+import subprocess
+import json
+import urllib.request
+
+def file_exists_in_branch(filename):
+    try:
+        result = subprocess.run(['git', 'ls-tree', '-r', '--name-only', 'HEAD'],
+                                capture_output=True, text=True, check=True)
+        files = result.stdout.splitlines()
+        return filename in files
+    except subprocess.CalledProcessError as e:
+        print("Error running git command:", e, file=sys.stderr)
+        sys.exit(1)
+
+def send_slack_message(webhook_url, message):
+    payload = json.dumps({"text": message}).encode("utf-8")
+    req = urllib.request.Request(
+        webhook_url,
+        data=payload,
+        headers={'Content-Type': 'application/json'}
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status != 200:
+                print(f"Slack webhook returned status {response.status}", file=sys.stderr)
+    except Exception as e:
+        print(f"Failed to send Slack message: {e}", file=sys.stderr)
+
+def main():
+    slack_url = os.environ.get("SLACK_WEBHOOK_URL")
+    if not slack_url:
+        print("Missing SLACK_WEBHOOK_URL", file=sys.stderr)
+        sys.exit(1)
+
+    codeowners_path = '.github/CODEOWNERS'
+    if not file_exists_in_branch(codeowners_path):
+        msg = ":warning: *CODEOWNERS file is missing in the HEAD branch!* Please add it to enforce code review policies."
+        send_slack_message(slack_url, msg)
+        sys.exit(1)  # Fail the check
+    else:
+        print("✅ CODEOWNERS file is present.")
+
+if __name__ == "__main__":
+    main()
