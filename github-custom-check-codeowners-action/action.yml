@@ -1,7 +1,7 @@
 name: Check CODEOWNERS
 
 description: >
-  Checks if CODEOWNERS file is present in the HEAD branch.
+  Cheks if CODEOWNERS file is present in the HEAD branch.
   Sends a Slack message if it's missing.
 
 inputs:
