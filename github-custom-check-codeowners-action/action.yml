@@ -10,7 +10,7 @@ inputs:
     description: Slack webhook URL
 
 runs:
-  using: "composite"
+  using: "composie"
   steps:
     - name: Check for CODEOWNERS
       shell: bash
